@@ -1,0 +1,151 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #333;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .dashboard {
+  background-color: #16213e;
+}
+
+body.dark-mode .dashboard-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+}
+
+body.dark-mode .sidebar {
+  background-color: #0f3460;
+}
+
+body.dark-mode .sidebar-logo h2,
+body.dark-mode .nav-item {
+  color: #e0e0e0;
+}
+
+body.dark-mode .nav-item:hover,
+body.dark-mode .nav-item.active {
+  background-color: #1a1a2e;
+}
+
+body.dark-mode .task-item,
+body.dark-mode .settings-section,
+body.dark-mode .project-card,
+body.dark-mode .team-card,
+body.dark-mode .calendar-container,
+body.dark-mode .placeholder-box {
+  background-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .task-item h3,
+body.dark-mode .settings-section h3,
+body.dark-mode .project-card h3,
+body.dark-mode .team-card h3,
+body.dark-mode .calendar-header h3 {
+  color: #e0e0e0;
+}
+
+body.dark-mode .task-input,
+body.dark-mode .setting-item input,
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="date"] {
+  background-color: #0f3460;
+  border-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .task-input:focus,
+body.dark-mode .setting-item input:focus {
+  border-color: #667eea;
+}
+
+body.dark-mode .page-content h2,
+body.dark-mode .page-content p {
+  color: #e0e0e0;
+}
+
+body.dark-mode .logout-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .calendar-day:not(.empty):hover {
+  background-color: #0f3460;
+}
+
+body.dark-mode select {
+  background-color: #0f3460;
+  border-color: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode .message.success {
+  background-color: #1b5e20;
+}
+
+body.dark-mode .message.error {
+  background-color: #b71c1c;
+}
+
