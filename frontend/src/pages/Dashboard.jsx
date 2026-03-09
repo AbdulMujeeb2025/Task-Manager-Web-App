@@ -225,18 +225,18 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <Sidebar activePage={currentPage} onNavigate={setCurrentPage} />
-      
-      <div className="dashboard">
-        <header className="dashboard-header">
-          <h1>Task Manager</h1>
-          <div className="user-info">
-            <span className="welcome">Shukriya, {user?.name}!</span>
-            <button onClick={onLogout} className="logout-btn">Logout</button>
-          </div>
-        </header>
+    <div className="app-layout">
+      <header className="top-navbar">
+        <h1>Task Manager</h1>
+        <div className="user-info">
+          <span className="welcome">Shukriya, {user?.name}!</span>
+          <button onClick={onLogout} className="logout-btn">Logout</button>
+        </div>
+      </header>
 
+      <div className="main-container">
+        <Sidebar activePage={currentPage} onNavigate={setCurrentPage} />
+        
         <main className="dashboard-main">
           {renderPage()}
         </main>

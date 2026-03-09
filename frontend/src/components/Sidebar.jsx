@@ -1,13 +1,13 @@
-import '../styles/Sidebar.css';
+import "../styles/Sidebar.css";
 
 export default function Sidebar({ activePage, onNavigate }) {
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'mytasks', label: 'My Tasks', icon: '✓' },
-    { id: 'projects', label: 'Projects', icon: '📁' },
-    { id: 'team', label: 'Team', icon: '👥' },
-    { id: 'calendar', label: 'Calendar', icon: '📅' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: "dashboard", label: "Dashboard", icon: "📊" },
+    { id: "mytasks", label: "My Tasks", icon: "✓" },
+    { id: "projects", label: "Projects", icon: "📁" },
+    { id: "team", label: "Team", icon: "👥" },
+    { id: "calendar", label: "Calendar", icon: "📅" },
+    { id: "settings", label: "Settings", icon: "⚙️" },
   ];
 
   return (
@@ -16,7 +16,7 @@ export default function Sidebar({ activePage, onNavigate }) {
         {menuItems.map((item) => (
           <button
             key={item.id}
-            className={`sidebar-item ${activePage === item.id ? 'active' : ''}`}
+            className={`sidebar-item ${activePage === item.id ? "active" : ""}`}
             onClick={() => onNavigate(item.id)}
           >
             <span className="icon">{item.icon}</span>

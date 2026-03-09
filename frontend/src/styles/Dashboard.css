@@ -1,9 +1,52 @@
-/* Dashboard Styling */
+/* App Layout - Main container for the entire dashboard */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Top Navbar - Full width at the top */
+.top-navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.top-navbar h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+/* Main Container - Holds sidebar and content side by side */
+.main-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Dashboard Main Content Area */
+.dashboard-main {
+  flex: 1;
+  background: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 30px 20px;
+  overflow-y: auto;
+}
+
+/* Old dashboard wrapper - kept for compatibility */
 .dashboard-wrapper {
   display: flex;
   min-height: 100vh;
 }
 
+/* Old dashboard - kept for compatibility */
 .dashboard {
   flex: 1;
   margin-left: 250px;
@@ -11,6 +54,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Old dashboard header - now styled as top-navbar */
 .dashboard-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -227,16 +271,51 @@
   font-size: 16px;
 }
 
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+
+  .sidebar-item {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}
+
 @media (max-width: 600px) {
-  .dashboard-header {
+  .top-navbar {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+    padding: 15px 20px;
+  }
+
+  .top-navbar h1 {
+    font-size: 22px;
   }
 
   .user-info {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .main-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 40vh;
+  }
+
+  .dashboard-main {
+    padding: 20px 15px;
   }
 
   .add-task-form {
