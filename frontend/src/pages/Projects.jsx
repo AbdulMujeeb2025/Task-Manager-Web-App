@@ -66,7 +66,7 @@ if (response.ok) {
       }
     } catch (err) {
       console.error('Error saving project:', err);
-      setMessage({ type: 'error', text: 'Error saving project. Server chal raha hai?' });
+      setMessage({ type: 'error', text: 'Error saving project. Is the server running?' });
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ if (response.ok) {
   return (
     <div className="page-content">
       <h2>Projects</h2>
-      <p>Apne sab projects yahan dekh sakte ho aur naye projects bana sakte ho.</p>
+      <p>You can view all your projects here and create new projects.</p>
 
       {message.text && (
         <div className={`message ${message.type}`}>{message.text}</div>
@@ -128,11 +128,11 @@ if (response.ok) {
 
       {!showForm ? (
         <button onClick={() => setShowForm(true)} className="add-project-btn">
-          + Naya Project Add Karo
+          + Add New Project
         </button>
       ) : (
         <div className="settings-section">
-          <h3>{editingId ? 'Project Edit Karo' : 'Naya Project Banao'}</h3>
+          <h3>{editingId ? 'Edit Project' : 'Create New Project'}</h3>
           <form onSubmit={handleSubmit}>
             <div className="setting-item">
               <label>Project Name</label>
@@ -140,7 +140,7 @@ if (response.ok) {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Project ka naam"
+                placeholder="Project name"
                 required
               />
             </div>
@@ -150,7 +150,7 @@ if (response.ok) {
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Project ka description"
+                placeholder="Project description"
               />
             </div>
             <div className="setting-item">
@@ -177,7 +177,7 @@ if (response.ok) {
 
       {projects.length === 0 ? (
         <div className="placeholder-box">
-          <p>📁 Koi project nahi hai. Naya project add karo!</p>
+          <p>📁 No projects yet. Add a new project!</p>
         </div>
       ) : (
         <div className="projects-grid">

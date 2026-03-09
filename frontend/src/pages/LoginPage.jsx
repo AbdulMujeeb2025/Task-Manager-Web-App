@@ -79,9 +79,9 @@ export default function LoginPage({ onLogin, onSwitchToSignup }) {
           </button>
         </form>
         <p className="switch-auth">
-          Account nahi hai? 
+          Don't have an account? 
           <button type="button" onClick={onSwitchToSignup} className="link-btn">
-            Signup karo
+            Sign up
           </button>
         </p>
       </div>

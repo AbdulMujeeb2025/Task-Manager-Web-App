@@ -15,7 +15,7 @@ export default function SignupModal({ onClose, onSignupSuccess }) {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Password match nahi kar raha');
+      setError('Passwords do not match');
       return;
     }
 
@@ -58,8 +58,8 @@ export default function SignupModal({ onClose, onSignupSuccess }) {
     <div className="modal-overlay">
       <div className="modal-content">
         <button className="modal-close" onClick={onClose}>&times;</button>
-        <h2>Task Manager - Account Banao</h2>
-        <p className="modal-subtitle">Apna pehla account create karo start karne ke liye</p>
+        <h2>Task Manager - Create Account</h2>
+        <p className="modal-subtitle">Create your first account to get started</p>
         
         <form onSubmit={handleSignup}>
           <div className="form-group">
@@ -70,7 +70,7 @@ export default function SignupModal({ onClose, onSignupSuccess }) {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Apna naam enter karo"
+              placeholder="Enter your name"
             />
           </div>
           <div className="form-group">
@@ -92,7 +92,7 @@ export default function SignupModal({ onClose, onSignupSuccess }) {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="Apna password banao"
+              placeholder="Enter your password"
             />
           </div>
           <div className="form-group">
@@ -103,12 +103,12 @@ export default function SignupModal({ onClose, onSignupSuccess }) {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              placeholder="Password confirm karo"
+              placeholder="Confirm your password"
             />
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" disabled={loading} className="signup-btn">
-            {loading ? 'Creating Account...' : 'Account Banao'}
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
       </div>

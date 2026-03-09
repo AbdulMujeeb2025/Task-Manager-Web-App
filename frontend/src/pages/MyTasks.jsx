@@ -4,11 +4,11 @@ export default function MyTasks({ tasks = [], onDelete, onEdit }) {
   return (
     <div className="page-content">
       <h2>My Tasks - Full List</h2>
-      <p>Tumhare sab tasks yahan nazr ayenge:</p>
+      <p>All your tasks will appear here:</p>
       
       {tasks.length === 0 ? (
         <div className="placeholder-box">
-          <p>📋 Koi task nahi hai. Dashboard se task add karo!</p>
+          <p>📋 No tasks yet. Add a task from the Dashboard!</p>
         </div>
       ) : (
         <div className="tasks-list">

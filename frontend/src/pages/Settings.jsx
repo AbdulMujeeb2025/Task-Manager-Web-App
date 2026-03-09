@@ -133,7 +133,7 @@ export default function Settings({ user, onUpdateUser, onDarkModeChange, darkMod
   return (
     <div className="page-content">
       <h2>Settings</h2>
-      <p>Apne account ke settings yahan change kar sakte ho:</p>
+      <p>You can change your account settings here:</p>
       
       {message.text && (
         <div className={`message ${message.type}`}>
@@ -151,7 +151,7 @@ export default function Settings({ user, onUpdateUser, onDarkModeChange, darkMod
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Apna naam enter karo"
+              placeholder="Enter your name"
             />
           </div>
           <div className="setting-item">
@@ -232,7 +232,7 @@ export default function Settings({ user, onUpdateUser, onDarkModeChange, darkMod
 
       <div className="settings-section danger-zone">
         <h3>Danger Zone</h3>
-        <p className="danger-text">Account delete karne ke baad ye action wapas nahi kiya ja sakta.</p>
+        <p className="danger-text">This action cannot be undone after deleting your account.</p>
         <button onClick={handleDeleteAccount} className="delete-account-btn">
           Delete Account
         </button>

@@ -125,14 +125,14 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
       case 'dashboard':
         return (
           <section className="tasks-section">
-            <h2>Meri Tasks</h2>
+            <h2>My Tasks</h2>
             
             <form onSubmit={handleAddTask} className="add-task-form">
               <input
                 type="text"
                 value={newTask}
                 onChange={(e) => setNewTask(e.target.value)}
-                placeholder="Naya task add karo..."
+                placeholder="Add a new task..."
                 className="task-input"
               />
               <input
@@ -149,7 +149,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
 
             <div className="tasks-list">
               {tasks.length === 0 ? (
-                <p className="no-tasks">Koi task nahi hai. Ek naya task add karo!</p>
+                <p className="no-tasks">No tasks yet. Add a new task!</p>
               ) : (
                 tasks.map(task => (
                   <div key={task._id} className="task-item">
@@ -229,7 +229,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
       <header className="top-navbar">
         <h1>Task Manager</h1>
         <div className="user-info">
-          <span className="welcome">Shukriya, {user?.name}!</span>
+          <span className="welcome">Welcome, {user?.name}!</span>
           <button onClick={onLogout} className="logout-btn">Logout</button>
         </div>
       </header>

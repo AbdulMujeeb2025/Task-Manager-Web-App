@@ -15,7 +15,7 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Password match nahi kar raha');
+      setError('Passwords do not match');
       return;
     }
 
@@ -67,7 +67,7 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Apna naam enter karo"
+              placeholder="Enter your name"
             />
           </div>
           <div className="form-group">
@@ -89,7 +89,7 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="Apna password banao"
+              placeholder="Enter your password"
             />
           </div>
           <div className="form-group">
@@ -100,7 +100,7 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              placeholder="Password confirm karo"
+              placeholder="Confirm your password"
             />
           </div>
           {error && <div className="error-message">{error}</div>}
@@ -109,9 +109,9 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
           </button>
         </form>
         <p className="switch-auth">
-          Pehle se account hai? 
+          Already have an account? 
           <button type="button" onClick={onSwitchToLogin} className="link-btn">
-            Login karo
+            Login
           </button>
         </p>
       </div>
