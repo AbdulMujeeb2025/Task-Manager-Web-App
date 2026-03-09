@@ -12,15 +12,15 @@ export default function Team() {
     <div className="page-content">
       <h2>Team Members</h2>
       <p>Apni team ke members yahan dekh sakte ho:</p>
-      
+
       <div className="team-grid">
         {teamMembers.map(member => (
           <div key={member.id} className="team-card">
-            <div className="team-avatar">{member.name.charAt(0)}</div>
-            <h3>{member.name}</h3>
+              <div className="team-avatar">{member.name.charAt(0)}</div>
+              <h3>{member.name}</h3>
             <p className="team-role">{member.role}</p>
-            <p className="team-email">{member.email}</p>
-          </div>
+              <p className="team-email">{member.email}</p>
+              </div>
         ))}
       </div>
 
