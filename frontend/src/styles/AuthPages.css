@@ -85,9 +85,26 @@
   border-left: 4px solid #c00;
 }
 
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border-left: 4px solid #28a745;
+}
+
 .switch-auth {
   text-align: center;
   margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 10px;
   color: #666;
   font-size: 14px;
 }

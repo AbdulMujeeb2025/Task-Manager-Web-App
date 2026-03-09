@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/AuthPages.css';
 
-export default function LoginPage({ onLogin, onSwitchToSignup }) {
+export default function LoginPage({ onLogin, onSwitchToSignup, onSwitchToForgotPassword, verificationStatus }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Show verification success message
+  useEffect(() => {
+    if (verificationStatus === 'success') {
+      setMessage('Your email has been successfully verified. You can now log in.');
+    }
+  }, [verificationStatus]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,6 +21,7 @@ export default function LoginPage({ onLogin, onSwitchToSignup }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
 
     try {
@@ -50,6 +59,7 @@ export default function LoginPage({ onLogin, onSwitchToSignup }) {
     <div className="auth-container">
       <div className="auth-card">
         <h2>Task Manager - Login</h2>
+        {message && <div className="success-message">{message}</div>}
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email</label>
@@ -82,6 +92,11 @@ export default function LoginPage({ onLogin, onSwitchToSignup }) {
           Don't have an account? 
           <button type="button" onClick={onSwitchToSignup} className="link-btn">
             Sign up
+          </button>
+        </p>
+        <p className="forgot-password">
+          <button type="button" onClick={onSwitchToForgotPassword} className="link-btn">
+            Forgot Password?
           </button>
         </p>
       </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import Dashboard from './pages/Dashboard'
 import SignupModal from './components/SignupModal'
 
@@ -10,6 +12,33 @@ function App() {
   const [user, setUser] = useState(null)
   const [showSignupModal, setShowSignupModal] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
+  const [resetToken, setResetToken] = useState(null)
+  const [verificationStatus, setVerificationStatus] = useState(null)
+
+  // Check URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    
+    // Check for verification success
+    if (params.get('verified') === 'true') {
+      setVerificationStatus('success')
+    }
+    
+    // Check for reset token in URL
+    const path = window.location.pathname
+    if (path.startsWith('/reset-password/')) {
+      const token = path.split('/reset-password/')[1]
+      if (token) {
+        setResetToken(token)
+        setCurrentPage('reset-password')
+      }
+    }
+    
+    // Check for verification token in URL
+    if (path.startsWith('/verify/')) {
+      // Verification is handled by backend redirect
+    }
+  }, [])
 
   // App load hone ke baad check karo ke kya user pehle se logged in hai
   useEffect(() => {
@@ -21,13 +50,6 @@ function App() {
       if (storedUser && token && storedUser !== 'undefined') {
         setUser(JSON.parse(storedUser))
         setCurrentPage('dashboard')
-      } else {
-        // 5-7 seconds ke baad signup modal dikhao (naye users ke liye)
-        const timer = setTimeout(() => {
-          setShowSignupModal(true)
-        }, 5500)
-        
-        return () => clearTimeout(timer)
       }
 
       // Load dark mode preference
@@ -83,6 +105,11 @@ function App() {
   const handleSwitchToLogin = () => {
     setCurrentPage('login')
     setShowSignupModal(false)
+    setVerificationStatus(null)
+  }
+
+  const handleSwitchToForgotPassword = () => {
+    setCurrentPage('forgot-password')
   }
 
   return (
@@ -97,8 +124,17 @@ function App() {
         />
       ) : currentPage === 'signup' ? (
         <SignupPage onSignup={handleSignup} onSwitchToLogin={handleSwitchToLogin} />
+      ) : currentPage === 'forgot-password' ? (
+        <ForgotPasswordPage onSwitchToLogin={handleSwitchToLogin} />
+      ) : currentPage === 'reset-password' ? (
+        <ResetPasswordPage token={resetToken} onSwitchToLogin={handleSwitchToLogin} />
       ) : (
-        <LoginPage onLogin={handleLogin} onSwitchToSignup={handleSwitchToSignup} />
+        <LoginPage 
+          onLogin={handleLogin} 
+          onSwitchToSignup={handleSwitchToSignup}
+          onSwitchToForgotPassword={handleSwitchToForgotPassword}
+          verificationStatus={verificationStatus}
+        />
       )}
       
       {showSignupModal && !user && (

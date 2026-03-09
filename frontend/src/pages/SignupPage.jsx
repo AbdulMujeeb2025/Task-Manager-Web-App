@@ -4,7 +4,9 @@ import '../styles/AuthPages.css';
 export default function SignupPage({ onSignup, onSwitchToLogin }) {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,9 +15,15 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
@@ -35,14 +43,8 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
       const data = await response.json();
 
       if (response.ok) {
-        const userData = {
-          _id: data._id,
-          name: data.name,
-          email: data.email
-        };
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(userData));
-        onSignup(userData);
+        setEmailSent(true);
+        setMessage(data.message || 'Registration successful! Please check your email to verify your account.');
       } else {
         setError(data.message || 'Signup failed');
       }
@@ -53,6 +55,48 @@ export default function SignupPage({ onSignup, onSwitchToLogin }) {
       setLoading(false);
     }
   };
+
+  // Show success message after email verification request
+  if (emailSent) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '60px', 
+              marginBottom: '20px',
+              color: '#28a745'
+            }}>✓</div>
+            <h2>Registration Successful!</h2>
+            <p style={{ color: '#666', marginBottom: '20px', lineHeight: '1.6' }}>
+              {message}
+            </p>
+            <p style={{ color: '#666', marginBottom: '30px', fontSize: '14px' }}>
+              Please check your email inbox and click the verification link to activate your account.
+              Until then, you won't be able to log in.
+            </p>
+            <button 
+              type="button" 
+              onClick={onSwitchToLogin}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-container">
