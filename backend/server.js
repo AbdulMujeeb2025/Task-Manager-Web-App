@@ -15,6 +15,7 @@ connectDB();
 
 // Routes
 app.use('/auth', require('./routes/auth'));
+app.use('/auth', require('./routes/resend'));
 app.use('/tasks', require('./routes/tasks'));
 app.use('/user', require('./routes/user'));
 app.use('/projects', require('./routes/projects'));

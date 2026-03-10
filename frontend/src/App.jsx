@@ -1,46 +1,21 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import VerifyPage from './pages/VerifyPage'
 import Dashboard from './pages/Dashboard'
 import SignupModal from './components/SignupModal'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('login')
   const [user, setUser] = useState(null)
   const [showSignupModal, setShowSignupModal] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
-  const [resetToken, setResetToken] = useState(null)
-  const [verificationStatus, setVerificationStatus] = useState(null)
-
-  // Check URL params on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    
-    // Check for verification success
-    if (params.get('verified') === 'true') {
-      setVerificationStatus('success')
-    }
-    
-    // Check for reset token in URL
-    const path = window.location.pathname
-    if (path.startsWith('/reset-password/')) {
-      const token = path.split('/reset-password/')[1]
-      if (token) {
-        setResetToken(token)
-        setCurrentPage('reset-password')
-      }
-    }
-    
-    // Check for verification token in URL
-    if (path.startsWith('/verify/')) {
-      // Verification is handled by backend redirect
-    }
-  }, [])
-
-  // App load hone ke baad check karo ke kya user pehle se logged in hai
+  const [loading, setLoading] = useState(true)
+  
+  // Check if user is logged in on app load
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('user')
@@ -49,7 +24,6 @@ function App() {
       
       if (storedUser && token && storedUser !== 'undefined') {
         setUser(JSON.parse(storedUser))
-        setCurrentPage('dashboard')
       }
 
       // Load dark mode preference
@@ -61,6 +35,8 @@ function App() {
       console.error('Error parsing user data:', error)
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -79,13 +55,11 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData)
-    setCurrentPage('dashboard')
     setShowSignupModal(false)
   }
 
   const handleSignup = (userData) => {
     setUser(userData)
-    setCurrentPage('dashboard')
     setShowSignupModal(false)
   }
 
@@ -93,57 +67,86 @@ function App() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
-    setCurrentPage('login')
     setShowSignupModal(false)
   }
 
-  const handleSwitchToSignup = () => {
-    setCurrentPage('signup')
-    setShowSignupModal(false)
-  }
-
-  const handleSwitchToLogin = () => {
-    setCurrentPage('login')
-    setShowSignupModal(false)
-    setVerificationStatus(null)
-  }
-
-  const handleSwitchToForgotPassword = () => {
-    setCurrentPage('forgot-password')
+  // Show loading while checking auth status
+  if (loading) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <p>Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <>
-      {user && currentPage === 'dashboard' ? (
-        <Dashboard 
-          user={user} 
-          onLogout={handleLogout}
-          onUpdateUser={handleUpdateUser}
-          darkMode={darkMode}
-          onDarkModeChange={handleDarkModeChange}
+    <Routes>
+        {/* Public Routes */}
+        <Route 
+          path="/login" 
+          element={
+            user ? <Navigate to="/dashboard" /> : 
+            <LoginPage 
+              onLogin={handleLogin} 
+              onSwitchToSignup={() => window.location.href = '/signup'}
+              onSwitchToForgotPassword={() => window.location.href = '/forgot-password'}
+            />
+          } 
         />
-      ) : currentPage === 'signup' ? (
-        <SignupPage onSignup={handleSignup} onSwitchToLogin={handleSwitchToLogin} />
-      ) : currentPage === 'forgot-password' ? (
-        <ForgotPasswordPage onSwitchToLogin={handleSwitchToLogin} />
-      ) : currentPage === 'reset-password' ? (
-        <ResetPasswordPage token={resetToken} onSwitchToLogin={handleSwitchToLogin} />
-      ) : (
-        <LoginPage 
-          onLogin={handleLogin} 
-          onSwitchToSignup={handleSwitchToSignup}
-          onSwitchToForgotPassword={handleSwitchToForgotPassword}
-          verificationStatus={verificationStatus}
+        <Route 
+          path="/signup" 
+          element={
+            user ? <Navigate to="/dashboard" /> : 
+            <SignupPage 
+              onSignup={handleSignup} 
+              onSwitchToLogin={() => window.location.href = '/login'} 
+            />
+          } 
         />
-      )}
-      
-      {showSignupModal && !user && (
-        <SignupModal 
-          onClose={() => setShowSignupModal(false)} 
-          onSignupSuccess={handleSignup}
+        <Route 
+          path="/forgot-password" 
+          element={
+            user ? <Navigate to="/dashboard" /> : 
+            <ForgotPasswordPage onSwitchToLogin={() => window.location.href = '/login'} />
+          } 
         />
-      )}
-    </>
+        <Route 
+          path="/reset-password/:token" 
+          element={
+            user ? <Navigate to="/dashboard" /> : 
+            <ResetPasswordPage onSwitchToLogin={() => window.location.href = '/login'} />
+          } 
+        />
+        <Route 
+          path="/verify/:token" 
+          element={
+            user ? <Navigate to="/dashboard" /> : <VerifyPage />
+          } 
+        />
+        
+        {/* Protected Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            user ? (
+              <Dashboard 
+                user={user} 
+                onLogout={handleLogout}
+                onUpdateUser={handleUpdateUser}
+                darkMode={darkMode}
+                onDarkModeChange={handleDarkModeChange}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
+        />
+        
+        {/* Default redirect */}
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+      </Routes>
   )
 }
 

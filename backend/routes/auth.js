@@ -70,7 +70,11 @@ router.get('/verify/:token', async (req, res) => {
     const user = await User.findOne({ verificationToken: req.params.token });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired verification token' });
+      // Check if client expects JSON (API call) or HTML (browser redirect)
+      if (req.accepts('json')) {
+        return res.status(400).json({ message: 'Invalid or expired verification token' });
+      }
+      return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?verified=false&error=invalid`);
     }
 
     // Update user as verified
@@ -92,12 +96,20 @@ router.get('/verify/:token', async (req, res) => {
       console.error('Welcome email error:', emailError);
     }
 
-    // Redirect to frontend with success message
+    // Check if client expects JSON (API call from frontend) or HTML (browser redirect)
+    if (req.accepts('json')) {
+      return res.status(200).json({ message: 'Email verified successfully! You can now log in.' });
+    }
+    
+    // Default: redirect to frontend with success message
     const redirectUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?verified=true`;
     res.redirect(redirectUrl);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    if (req.accepts('json')) {
+      return res.status(500).json({ message: 'Server error' });
+    }
+    res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?verified=false&error=server`);
   }
 });
 
@@ -119,7 +131,26 @@ router.post('/login', async (req, res) => {
 
     // Check if email is verified
     if (!user.isVerified) {
-      return res.status(401).json({ message: 'Please verify your email before logging in' });
+      // Resend verification email
+      if (user.verificationToken) {
+        const verifyUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/verify/${user.verificationToken}`;
+        const message = `
+          <h1>Email Verification</h1>
+          <p>Please verify your email to activate your account.</p>
+          <p>You requested this email because you tried to log in without verifying your email.</p>
+          <a href="${verifyUrl}" clicktracking=off>${verifyUrl}</a>
+        `;
+
+        try {
+          await sendEmail(user.email, 'Verify Your Email - Task Manager', message);
+        } catch (emailError) {
+          console.error('Resend verification email error:', emailError);
+        }
+      }
+      
+      return res.status(401).json({ 
+        message: 'Your email is not verified. A new verification email has been sent. Please check your inbox.' 
+      });
     }
 
     // Check for password
