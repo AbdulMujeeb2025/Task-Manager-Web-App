@@ -25,10 +25,15 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
   const [editAssignedTo, setEditAssignedTo] = useState('');
   const [editDueDate, setEditDueDate] = useState('');
 
-  // Calculate statistics
+  // Calculate statistics based on status field
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(task => task.completed).length;
+  const completedTasks = tasks.filter(task => task.status === 'Completed' || task.completed).length;
   const pendingTasks = totalTasks - completedTasks;
+
+  // Helper to check if task is completed
+  const isTaskCompleted = (task) => {
+    return task.status === 'Completed' || task.completed === true;
+  };
 
   // Filter tasks based on search query
   const filteredTasks = tasks.filter(task => {
@@ -135,23 +140,15 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
     }
   };
 
-  const handleToggleComplete = async (task) => {
+  const handleMarkComplete = async (task) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/tasks/${task._id}`, {
+      const response = await fetch(`http://localhost:4000/tasks/${task._id}/complete`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
-          title: task.title, 
-          description: task.description,
-          priority: task.priority,
-          assignedTo: task.assignedTo?._id || task.assignedTo || null,
-          dueDate: task.dueDate, 
-          completed: !task.completed 
-        }),
       });
 
       if (response.ok) {
@@ -159,7 +156,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
         setTasks(tasks.map(t => (t._id === updated._id ? updated : t)));
       }
     } catch (err) {
-      console.error('Error updating task:', err);
+      console.error('Error marking task as completed:', err);
     }
   };
 
@@ -388,7 +385,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
                               <input
                                 type="checkbox"
                                 checked={task.completed || false}
-                                onChange={() => handleToggleComplete(task)}
+                                onChange={() => handleMarkComplete(task)}
                               />
                               <span className="checkmark"></span>
                             </label>
@@ -417,7 +414,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
                         <div className="task-controls">
                           {!task.completed && (
                             <button 
-                              onClick={() => handleToggleComplete(task)} 
+                              onClick={() => handleMarkComplete(task)} 
                               className="mark-complete-btn"
                               aria-label="Mark as completed"
                             >

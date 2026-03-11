@@ -20,6 +20,11 @@ const taskSchema = new mongoose.Schema({
     enum: ['Low', 'Medium', 'High'],
     default: 'Medium'
   },
+  status: {
+    type: String,
+    enum: ['Pending', 'Completed'],
+    default: 'Pending'
+  },
   completed: {
     type: Boolean,
     default: false
@@ -36,6 +41,11 @@ const taskSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+// Virtual for completed status based on status field
+taskSchema.virtual('isCompleted').get(function() {
+  return this.status === 'Completed';
 });
 
 module.exports = mongoose.model('Task', taskSchema);

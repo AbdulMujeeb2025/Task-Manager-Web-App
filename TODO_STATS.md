@@ -1,20 +1,44 @@
-# Task Search Feature
+# Mark as Completed Feature
 
-## Requirements Met:
-1. ✅ Search bar at the top of the task list page
-2. ✅ Search by Title and Description
-3. ✅ Dynamic filtering as user types (no page refresh)
-4. ✅ "No tasks found" message when no matches
-5. ✅ Design matches existing dashboard UI (purple gradient theme)
+## Status: ✅ Complete
 
-## Implementation:
-- Added `searchQuery` state
-- Added `filteredTasks` computed from tasks based on search query
-- Search input with magnifying glass emoji icon
-- Case-insensitive matching on title and description
-- Shows matching search term in "No tasks found" message
+The "Mark as Completed" feature is fully implemented:
 
-## Files Modified:
-- `frontend/src/pages/Dashboard.jsx` - Added search state, filter logic, and search input UI
-- `frontend/src/styles/Dashboard.css` - Added `.search-container` and `.search-input` styles
+### 1. Task Database Model ✅
+```javascript
+status: {
+  type: String,
+  enum: ['Pending', 'Completed'],
+  default: 'Pending'
+}
+```
+
+### 2. Backend API Route ✅
+```javascript
+// PUT /tasks/:id/complete
+router.put('/:id/complete', auth, async (req, res) => {
+  task = await Task.findByIdAndUpdate(
+    req.params.id,
+    { status: 'Completed', completed: true },
+    { new: true }
+  );
+  res.json(task);
+});
+```
+
+### 3. Frontend - Handle Mark Complete ✅
+- Calls `PUT /tasks/:id/complete` endpoint
+- Updates UI after successful response
+
+### 4. Display ✅
+- Completed tasks show strikethrough text
+- Task card has reduced opacity
+- Statistics update automatically
+
+### How it works:
+1. User clicks "Mark Complete" button
+2. Frontend calls `PUT /tasks/:id/complete`
+3. Backend updates status to 'Completed' and completed to true
+4. Frontend updates the task in state
+5. UI refreshes showing task as completed
 

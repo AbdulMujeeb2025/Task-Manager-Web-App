@@ -69,6 +69,35 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route   PUT /tasks/:id/complete
+// @desc    Mark task as completed
+// @access  Private
+router.put('/:id/complete', auth, async (req, res) => {
+  try {
+    let task = await Task.findById(req.params.id);
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if task belongs to user
+    if (task.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    task = await Task.findByIdAndUpdate(
+      req.params.id,
+      { status: 'Completed', completed: true },
+      { new: true }
+    ).populate('assignedTo', 'name email');
+
+    res.json(task);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   PUT /tasks/:id
 // @desc    Update task
 // @access  Private
