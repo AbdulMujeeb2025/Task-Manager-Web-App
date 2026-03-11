@@ -11,6 +11,7 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [tasks, setTasks] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('Medium');
@@ -28,6 +29,15 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => task.completed).length;
   const pendingTasks = totalTasks - completedTasks;
+
+  // Filter tasks based on search query
+  const filteredTasks = tasks.filter(task => {
+    const query = searchQuery.toLowerCase();
+    return (
+      task.title.toLowerCase().includes(query) ||
+      (task.description && task.description.toLowerCase().includes(query))
+    );
+  });
 
   useEffect(() => {
     if (currentPage === 'dashboard' || currentPage === 'mytasks') {
@@ -302,11 +312,25 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
               </button>
             </form>
 
+            {/* Search Bar */}
+            <div className="search-container">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="🔍 Search tasks by title or description..."
+                className="search-input"
+                aria-label="Search tasks"
+              />
+            </div>
+
             <div className="tasks-list">
               {tasks.length === 0 ? (
                 <p className="no-tasks">No tasks yet. Add a new task!</p>
+              ) : filteredTasks.length === 0 ? (
+                <p className="no-tasks">No tasks found matching "{searchQuery}"</p>
               ) : (
-                tasks.map(task => (
+                filteredTasks.map(task => (
                   <div key={task._id} className={`task-item ${task.completed ? 'completed' : ''}`}>
                     {editingId === task._id ? (
                       <form onSubmit={handleUpdateTask} className="edit-form">
@@ -391,6 +415,15 @@ export default function Dashboard({ user, onLogout, onUpdateUser, darkMode, onDa
                           </div>
                         </div>
                         <div className="task-controls">
+                          {!task.completed && (
+                            <button 
+                              onClick={() => handleToggleComplete(task)} 
+                              className="mark-complete-btn"
+                              aria-label="Mark as completed"
+                            >
+                              ✓ Mark Complete
+                            </button>
+                          )}
                           <button onClick={() => handleEditClick(task)} className="icon-btn edit-btn" aria-label="Edit">✏️</button>
                           <button onClick={() => handleDeleteTask(task._id)} className="icon-btn delete-btn" aria-label="Delete">🗑️</button>
                         </div>
