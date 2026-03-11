@@ -1,17 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/Dashboard.css';
 
+const API_URL = 'http://localhost:4000';
+
 export default function Team() {
-  const [teamMembers, setTeamMembers] = useState([
-    { id: 1, name: 'Ali Ahmed', role: 'Project Manager', email: 'ali@example.com' },
-    { id: 2, name: 'Sara Khan', role: 'Developer', email: 'sara@example.com' },
-    { id: 3, name: 'Ahmed Raza', role: 'Designer', email: 'ahmed@example.com' },
-    { id: 4, name: 'Fatima Bibi', role: 'QA Engineer', email: 'fatima@example.com' },
-  ]);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', role: '', email: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   
   // View Profile modal state
   const [viewMember, setViewMember] = useState(null);
@@ -19,6 +17,27 @@ export default function Team() {
   // Edit member state
   const [editMemberId, setEditMemberId] = useState(null);
   const [editFormData, setEditFormData] = useState({ name: '', role: '', email: '' });
+
+  // Fetch team members from backend
+  const fetchTeamMembers = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/team`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTeamMembers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+
+  // Load team members on component mount
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,7 +48,7 @@ export default function Team() {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validation
@@ -46,21 +65,32 @@ export default function Team() {
     }
 
     setLoading(true);
+    setError('');
 
-    // Simulate adding team member
-    setTimeout(() => {
-      const newMember = {
-        id: Date.now(),
-        name: formData.name,
-        role: formData.role,
-        email: formData.email
-      };
-      
-      setTeamMembers([...teamMembers, newMember]);
-      setFormData({ name: '', role: '', email: '' });
-      setShowForm(false);
+    try {
+      const response = await fetch(`${API_URL}/api/team`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTeamMembers([...teamMembers, data]);
+        setFormData({ name: '', role: '', email: '' });
+        setShowForm(false);
+      } else {
+        setError(data.message || 'Failed to add team member');
+      }
+    } catch (error) {
+      console.error('Error adding team member:', error);
+      setError('Failed to add team member. Please try again.');
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleCancel = () => {
@@ -80,11 +110,11 @@ export default function Team() {
 
   // Edit functions
   const handleEditClick = (member) => {
-    setEditMemberId(member.id);
+    setEditMemberId(member._id);
     setEditFormData({ name: member.name, role: member.role, email: member.email });
   };
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     
     // Validation
@@ -100,16 +130,33 @@ export default function Team() {
       return;
     }
 
-    // Update member
-    setTeamMembers(teamMembers.map(member => 
-      member.id === editMemberId 
-        ? { ...member, name: editFormData.name, role: editFormData.role, email: editFormData.email }
-        : member
-    ));
-    
-    setEditMemberId(null);
-    setEditFormData({ name: '', role: '', email: '' });
-    setError('');
+    try {
+      const response = await fetch(`${API_URL}/api/team/${editMemberId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editFormData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTeamMembers(teamMembers.map(member => 
+          member._id === editMemberId 
+            ? { ...member, name: editFormData.name, role: editFormData.role, email: editFormData.email }
+            : member
+        ));
+        setEditMemberId(null);
+        setEditFormData({ name: '', role: '', email: '' });
+        setError('');
+      } else {
+        setError(data.message || 'Failed to update team member');
+      }
+    } catch (error) {
+      console.error('Error updating team member:', error);
+      setError('Failed to update team member. Please try again.');
+    }
   };
 
   const handleEditCancel = () => {
@@ -119,11 +166,34 @@ export default function Team() {
   };
 
   // Delete function
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to remove this team member?')) {
-      setTeamMembers(teamMembers.filter(member => member.id !== id));
+      try {
+        const response = await fetch(`${API_URL}/api/team/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          setTeamMembers(teamMembers.filter(member => member._id !== id));
+        }
+      } catch (error) {
+        console.error('Error deleting team member:', error);
+        setError('Failed to delete team member. Please try again.');
+      }
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="page-content">
+        <h2>Team Members</h2>
+        <p>Loading team members...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-content">
@@ -181,65 +251,71 @@ export default function Team() {
       )}
 
       <div className="team-grid">
-        {teamMembers.map(member => (
-          <div key={member.id} className="team-card">
-            {editMemberId === member.id ? (
-              // Edit Form
-              <form onSubmit={handleEditSubmit} style={{ width: '100%' }}>
-                <div className="setting-item">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={editFormData.name}
-                    onChange={handleEditInputChange}
-                    placeholder="Enter name"
-                    required
-                  />
-                </div>
-                <div className="setting-item">
-                  <label>Role</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={editFormData.role}
-                    onChange={handleEditInputChange}
-                    placeholder="Enter role"
-                    required
-                  />
-                </div>
-                <div className="setting-item">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={editFormData.email}
-                    onChange={handleEditInputChange}
-                    placeholder="Enter email"
-                    required
-                  />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <button type="submit" className="save-btn">Save</button>
-                  <button type="button" onClick={handleEditCancel} className="cancel-btn">Cancel</button>
-                </div>
-              </form>
-            ) : (
-              // Display Member
-              <>
-                <div className="team-avatar">{member.name.charAt(0)}</div>
-                <h3>{member.name}</h3>
-                <p className="team-role">{member.role}</p>
-                <p className="team-email">{member.email}</p>
-                <div className="team-actions">
-                  <button onClick={() => handleViewProfile(member)} className="icon-btn view-btn" title="View Profile">👁️</button>
-                  <button onClick={() => handleEditClick(member)} className="icon-btn edit-btn" title="Edit">✏️</button>
-                  <button onClick={() => handleDelete(member.id)} className="icon-btn delete-btn" title="Delete">🗑️</button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+        {teamMembers.length === 0 ? (
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#666' }}>
+            No team members found. Add your first team member above.
+          </p>
+        ) : (
+          teamMembers.map(member => (
+            <div key={member._id} className="team-card">
+              {editMemberId === member._id ? (
+                // Edit Form
+                <form onSubmit={handleEditSubmit} style={{ width: '100%' }}>
+                  <div className="setting-item">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={editFormData.name}
+                      onChange={handleEditInputChange}
+                      placeholder="Enter name"
+                      required
+                    />
+                  </div>
+                  <div className="setting-item">
+                    <label>Role</label>
+                    <input
+                      type="text"
+                      name="role"
+                      value={editFormData.role}
+                      onChange={handleEditInputChange}
+                      placeholder="Enter role"
+                      required
+                    />
+                  </div>
+                  <div className="setting-item">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={editFormData.email}
+                      onChange={handleEditInputChange}
+                      placeholder="Enter email"
+                      required
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                    <button type="submit" className="save-btn">Save</button>
+                    <button type="button" onClick={handleEditCancel} className="cancel-btn">Cancel</button>
+                  </div>
+                </form>
+              ) : (
+                // Display Member
+                <>
+                  <div className="team-avatar">{member.name.charAt(0)}</div>
+                  <h3>{member.name}</h3>
+                  <p className="team-role">{member.role}</p>
+                  <p className="team-email">{member.email}</p>
+                  <div className="team-actions">
+                    <button onClick={() => handleViewProfile(member)} className="icon-btn view-btn" title="View Profile">👁️</button>
+                    <button onClick={() => handleEditClick(member)} className="icon-btn edit-btn" title="Edit">✏️</button>
+                    <button onClick={() => handleDelete(member._id)} className="icon-btn delete-btn" title="Delete">🗑️</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* View Profile Modal */}
