@@ -17,6 +17,19 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
+// @route   GET /user/all
+// @desc    Get all users (for team members assignment)
+// @access  Private
+router.get('/all', auth, async (req, res) => {
+  try {
+    const users = await User.find().select('_id name email');
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   PUT /user/profile
 // @desc    Update user profile
 // @access  Private

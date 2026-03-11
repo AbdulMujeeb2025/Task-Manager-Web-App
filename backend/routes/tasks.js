@@ -9,8 +9,34 @@ const auth = require('../middleware/auth');
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const tasks = await Task.find({ user: req.user.id })
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 });
     res.json(tasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /tasks/:id
+// @desc    Get single task
+// @access  Private
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id)
+      .populate('assignedTo', 'name email');
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    // Check if task belongs to user
+    if (task.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    res.json(task);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
@@ -22,15 +48,20 @@ router.get('/', auth, async (req, res) => {
 // @access  Private
 router.post('/', auth, async (req, res) => {
   try {
-    const { title, dueDate } = req.body;
+    const { title, description, dueDate, priority, assignedTo } = req.body;
     
     const newTask = new Task({
       title,
+      description: description || '',
       dueDate: dueDate || null,
+      priority: priority || 'Medium',
+      assignedTo: assignedTo || null,
       user: req.user.id
     });
 
     const task = await newTask.save();
+    // Populate the assignedTo field for the response
+    await task.populate('assignedTo', 'name email');
     res.json(task);
   } catch (error) {
     console.error(error);
@@ -43,7 +74,7 @@ router.post('/', auth, async (req, res) => {
 // @access  Private
 router.put('/:id', auth, async (req, res) => {
   try {
-    const { title, dueDate, completed } = req.body;
+    const { title, description, dueDate, completed, priority, assignedTo } = req.body;
     
     let task = await Task.findById(req.params.id);
     
@@ -58,9 +89,16 @@ router.put('/:id', auth, async (req, res) => {
 
     task = await Task.findByIdAndUpdate(
       req.params.id,
-      { title, dueDate, completed },
+      { 
+        title, 
+        description, 
+        dueDate, 
+        completed, 
+        priority, 
+        assignedTo 
+      },
       { new: true }
-    );
+    ).populate('assignedTo', 'name email');
 
     res.json(task);
   } catch (error) {
