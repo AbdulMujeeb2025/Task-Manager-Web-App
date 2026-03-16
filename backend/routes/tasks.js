@@ -9,9 +9,15 @@ const auth = require('../middleware/auth');
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user.id })
+    const tasks = await Task.find({ 
+        $or: [
+          { user: req.user.id },
+          { assignedTo: req.user.id }
+        ]
+      })
       .populate('assignedTo', 'name email')
       .sort({ createdAt: -1 });
+
     res.json(tasks);
   } catch (error) {
     console.error(error);
@@ -31,10 +37,11 @@ router.get('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Check if task belongs to user
-    if (task.user.toString() !== req.user.id) {
+    // Check if task belongs to user or assigned to user
+    if (task.user.toString() !== req.user.id && (task.assignedTo && task.assignedTo.toString() !== req.user.id)) {
       return res.status(401).json({ message: 'Not authorized' });
     }
+
 
     res.json(task);
   } catch (error) {
@@ -80,10 +87,11 @@ router.put('/:id/complete', auth, async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Check if task belongs to user
-    if (task.user.toString() !== req.user.id) {
+    // Check if task belongs to user or assigned to user
+    if (task.user.toString() !== req.user.id && (task.assignedTo && task.assignedTo.toString() !== req.user.id)) {
       return res.status(401).json({ message: 'Not authorized' });
     }
+
 
     task = await Task.findByIdAndUpdate(
       req.params.id,
@@ -111,10 +119,11 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Check if task belongs to user
-    if (task.user.toString() !== req.user.id) {
+    // Check if task belongs to user or assigned to user
+    if (task.user.toString() !== req.user.id && (task.assignedTo && task.assignedTo.toString() !== req.user.id)) {
       return res.status(401).json({ message: 'Not authorized' });
     }
+
 
     task = await Task.findByIdAndUpdate(
       req.params.id,
@@ -147,10 +156,11 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Check if task belongs to user
-    if (task.user.toString() !== req.user.id) {
+    // Check if task belongs to user or assigned to user
+    if (task.user.toString() !== req.user.id && (task.assignedTo && task.assignedTo.toString() !== req.user.id)) {
       return res.status(401).json({ message: 'Not authorized' });
     }
+
 
     await Task.findByIdAndDelete(req.params.id);
     res.json({ message: 'Task removed' });

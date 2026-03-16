@@ -1,31 +1,10 @@
-# Task: Restructure Layout - Fixed Navbar and Sidebar
+# Task Assignment Implementation Plan
 
-## Plan Status: COMPLETED
+## Steps:
+- [x] 1. Create TODO.md with this plan
+- [x] 2. Edit backend/routes/tasks.js: Update GET /tasks query to use $or for user or assignedTo
+- [x] 3. Update auth checks in GET/:id, PUT/:id/complete, PUT/:id, DELETE/:id to allow creator OR assignee
+- [x] 4. Test task creation/assignment/fetch
+- [x] 5. Mark complete
 
-### Steps Completed:
-
-- [x] 1. Modify Dashboard.jsx - Restructure HTML with fixed navbar and sidebar
-- [x] 2. Modify Dashboard.css - Add fixed positioning for navbar and sidebar
-- [x] 3. Modify Sidebar.css - Remove fixed positioning (now handled by Dashboard.css)
-- [x] 4. Add responsive styles for mobile/tablet
-
-### Final Layout Structure:
-
-```
-┌─────────────────────────────────────────────────┐
-│         Navbar (fixed, full width)             │
-├────────────┬────────────────────────────────────┤
-│            │                                    │
-│  Sidebar   │         Main Content               │
-│  (fixed,   │         (scrollable)              │
-│   left)    │                                    │
-│            │                                    │
-└────────────┴────────────────────────────────────┘
-```
-
-### Key Features:
-- Navbar: Fixed at top, full width, z-index 1000
-- Sidebar: Fixed below navbar, left side, fills remaining height
-- Main Content: Scrollable vertically, no double scrollbars
-- Responsive: Adapts to mobile and tablet screens
 
