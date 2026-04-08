@@ -15,7 +15,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(true)
   
-  // Check if user is logged in on app load
+  
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('user')
